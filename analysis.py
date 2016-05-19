@@ -1,12 +1,6 @@
 import seaborn
 from sklearn import cross_validation
 from sklearn.linear_model import LogisticRegression
-from sklearn.decomposition import PCA
-
-import sklearn
-
-print sklearn.__version__
-
 
 class MusicClassifier:
     def __init__(self, arffs, model, classes, in_size=900, test_size = 0.3,  k_best=5, n_components=3):
@@ -26,9 +20,6 @@ class MusicClassifier:
         #Unique label for each input .arff file
         self.l = 0
 
-        self.k_best = k_best
-        self.n_components = n_components
-
         self.testX = None
         self.testY = None
 
@@ -37,7 +28,6 @@ class MusicClassifier:
 
         self.prep_stage = False
         self.train_stage = False
-
 
     def add_dataset(self, arff):
         if self.prep_stage is True:
@@ -55,7 +45,7 @@ class MusicClassifier:
 
     """Preprocessing: PCA & Chi-Squared Test"""
     def preprocess(self):
-
+        print self.arffs
         for arff in self.arffs:
             print "Loading arff file: %s"%arff
 
@@ -70,12 +60,6 @@ class MusicClassifier:
         self.train_x, self.test_x, \
         self.train_y, self.test_y = cross_validation.train_test_split(self.x, self.y,
                                                                       test_size=self.test_size)
-
-        if self.n_components is not -1:
-            self.fs = PCA(n_components=self.n_components).fit(self.train_x)
-            self.train_x = self.fs.transform(self.train_x)
-            self.test_x = self.fs.transform(self.test_x)
-
         self.prep_stage = True
 
 
@@ -99,7 +83,6 @@ class MusicClassifier:
         self.train_stage = True
 
     def predict(self, vector):
-        #t = self.fs.transform(vector)
         return self.classes[self.model.predict(vector)]
 
     """Cross Validation"""
@@ -116,9 +99,10 @@ class MusicClassifier:
 def main():
     datasets = ['metal', 'hiphop', 'classical', 'jazz', 'disco', 'pop', 'reggae']
 
-    clf = MusicClassifier([], LogisticRegression, [], in_size=1300, test_size=0.2, n_components=-1)
+    clf = MusicClassifier([], LogisticRegression, [], in_size=1000, test_size=0.2, n_components=-1)
 
-    def oneByOne():
+    """ Evalutation """
+    def one_by_one():
         clf.add_dataset('rock')
         for ds in datasets:
             clf.add_dataset(ds)
@@ -141,16 +125,11 @@ def main():
             x = test[i][0]
             y = test[i][1]
 
-            print (clf.predict(x), y)
+            #print (clf.predict(x), y)
 
     all()
-
-    #for p in zip(X,Y):
-    #    print "Actual: %s, Predicted: %s"%(classes[p[1]], clf.predict(p[0]))
-
-    #vecs = classifier.arff_to_vector(arffs[3])
-
-    #print classifier.predict(vecs[4])
+    print clf.score()
 
 
-main()
+if __name__ == "__main__":
+    main()
