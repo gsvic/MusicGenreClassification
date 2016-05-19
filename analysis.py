@@ -3,7 +3,7 @@ from sklearn import cross_validation
 from sklearn.linear_model import LogisticRegression
 
 class MusicClassifier:
-    def __init__(self, arffs, model, classes, in_size=900, test_size = 0.3,  k_best=5, n_components=3):
+    def __init__(self, arffs, model, classes, in_size=900, test_size=0.3):
         self.arffs = arffs
         self.classes = classes
         self.test_size = test_size
@@ -43,7 +43,7 @@ class MusicClassifier:
 
         return self
 
-    """Preprocessing: PCA & Chi-Squared Test"""
+    """ Preprocessing """
     def preprocess(self):
         print self.arffs
         for arff in self.arffs:
@@ -85,7 +85,7 @@ class MusicClassifier:
     def predict(self, vector):
         return self.classes[self.model.predict(vector)]
 
-    """Cross Validation"""
+    """ Evaluation """
     def score(self):
         sc = self.model.score(self.test_x, self.test_y)
         return sc
@@ -101,7 +101,7 @@ def main():
 
     clf = MusicClassifier([], LogisticRegression, [], in_size=1000, test_size=0.2, n_components=-1)
 
-    """ Evalutation """
+    """ Evaluation """
     def one_by_one():
         clf.add_dataset('rock')
         for ds in datasets:
