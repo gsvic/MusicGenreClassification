@@ -1,9 +1,10 @@
 import seaborn
+from matplotlib import pyplot as plt
 from sklearn import cross_validation
 from sklearn.linear_model import LogisticRegression
 
 class MusicClassifier:
-    def __init__(self, arffs, model, classes, in_size=900, test_size=0.3):
+    def __init__(self, arffs, model, classes, in_size=800, test_size=0.3):
         self.arffs = arffs
         self.classes = classes
         self.test_size = test_size
@@ -45,11 +46,11 @@ class MusicClassifier:
 
     """ Preprocessing """
     def preprocess(self):
-        print self.arffs
         for arff in self.arffs:
             print "Loading arff file: %s"%arff
 
             f = open(arff).readlines()[70:self.in_size]
+
             f = map(lambda line: map(lambda num: float(num), line.split(",")[:-1]), f)
 
             self.x += f
@@ -77,7 +78,7 @@ class MusicClassifier:
             print "The dataset must be preprocessed first"
             return
 
-        print("Training with %d of %d instances"%(len(self.train_x), len(self.x)))
+        #print("Training with %d of %d instances"%(len(self.train_x), len(self.x)))
 
         self.trained_model = self.model.fit(self.train_x, self.train_y)
         self.train_stage = True
@@ -97,9 +98,9 @@ class MusicClassifier:
 
 
 def main():
-    datasets = ['metal', 'hiphop', 'classical', 'jazz', 'disco', 'pop', 'reggae']
+    datasets = ['metal', 'hiphop', 'classical', 'jazz', 'disco', 'pop', 'reggae', 'country']
 
-    clf = MusicClassifier([], LogisticRegression, [], in_size=1000, test_size=0.2, n_components=-1)
+    clf = MusicClassifier([], LogisticRegression, [], in_size=1350, test_size=0.3)
 
     """ Evaluation """
     def one_by_one():
@@ -107,7 +108,8 @@ def main():
         for ds in datasets:
             clf.add_dataset(ds)
             clf.prepare()
-            print "%d, %f"%(len(clf.arffs), clf.score())
+            #print "%d, %f"%(len(clf.arffs), clf.score())
+            print clf.score()
 
     def all():
         clf.add_dataset('rock')\
@@ -118,14 +120,9 @@ def main():
             .add_dataset('disco')\
             .add_dataset('pop')\
             .add_dataset('reggae')\
+	        .add_dataset('country')\
             .prepare()
 
-        test = clf.get_test_data()
-        for i in range(0,20):
-            x = test[i][0]
-            y = test[i][1]
-
-            #print (clf.predict(x), y)
 
     all()
     print clf.score()
